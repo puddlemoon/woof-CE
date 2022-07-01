@@ -9,46 +9,19 @@ on:
       - '!kernel-kit/patches/**'
       - '!kernel-kit/README'
       - '!kernel-kit/ZNOTES'
-  schedule:
-    - cron: '0 0 * * 1'
   workflow_dispatch:
 
 jobs:
   build:
-    if: github.event_name != 'schedule' || (github.repository == 'puppylinux-woof-CE/woof-CE' && github.ref == 'refs/heads/testing')
     runs-on: ubuntu-20.04
     container:
       image: ${{ matrix.image }}
     strategy:
       matrix:
         include:
-          - kernel-kit-config: 4.19.x-x86
-            deps: gcc gcc-multilib
-            image: ubuntu:bionic
-          - kernel-kit-config: 4.19.x-x86_64
-            deps: gcc
-            image: ubuntu:bionic
-          - kernel-kit-config: 5.4.x-x86
-            deps: gcc gcc-multilib
-            image: ubuntu:focal
-          - kernel-kit-config: 5.4.x-x86_64
-            deps: gcc
-            image: ubuntu:focal
-          - kernel-kit-config: 5.10.x-x86
-            deps: gcc gcc-multilib
-            image: debian:bullseye-slim
-          - kernel-kit-config: 5.10.x-x86_64
-            deps: gcc
-            image: debian:bullseye-slim
-          - kernel-kit-config: 5.15.x-x86
-            deps: gcc gcc-multilib
-            image: debian:bullseye-slim
           - kernel-kit-config: 5.15.x-x86_64
             deps: gcc
             image: debian:bullseye-slim
-          - kernel-kit-config: 5.4.x-veyron-speedy
-            deps: gcc-arm-linux-gnueabihf
-            image: ubuntu:focal
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
@@ -70,7 +43,6 @@ jobs:
           path: kernel-kit/small-output
           retention-days: 14
   usrmerge:
-    if: github.event_name != 'schedule' || (github.repository == 'puppylinux-woof-CE/woof-CE' && github.ref == 'refs/heads/testing')
     needs: build
     runs-on: ubuntu-20.04
     container:
@@ -78,12 +50,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - kernel-kit-config: 5.10.x-x86
-            image: debian:bullseye-slim
-          - kernel-kit-config: 5.10.x-x86_64
-            image: debian:bullseye-slim
-          - kernel-kit-config: 5.15.x-x86
-            image: debian:bullseye-slim
           - kernel-kit-config: 5.15.x-x86_64
             image: debian:bullseye-slim
     steps:
